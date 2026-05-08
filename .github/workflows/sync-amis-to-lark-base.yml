@@ -12,28 +12,43 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
 
-      - name: Run sync
+      - name: Validate required secrets
         env:
           MISA_ACCESS_CODE: ${{ secrets.MISA_ACCESS_CODE }}
-          MISA_APP_ID: ${{ secrets.MISA_APP_ID }}
-          MISA_ORG_COMPANY_CODE: ${{ secrets.MISA_ORG_COMPANY_CODE }}
-          MISA_DICTIONARY_TYPE: ${{ secrets.MISA_DICTIONARY_TYPE }}
-          MISA_SKIP: ${{ secrets.MISA_SKIP }}
-          MISA_TAKE: ${{ secrets.MISA_TAKE }}
-          MISA_LAST_SYNC_TIME: ${{ secrets.MISA_LAST_SYNC_TIME }}
           LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
           LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
           LARK_BASE_APP_TOKEN: ${{ secrets.LARK_BASE_APP_TOKEN }}
           LARK_TABLE_ID: ${{ secrets.LARK_TABLE_ID }}
-          LARK_CODE_FIELD: ${{ secrets.LARK_CODE_FIELD }}
-          LARK_NAME_FIELD: ${{ secrets.LARK_NAME_FIELD }}
-          LARK_PAGE_SIZE: ${{ secrets.LARK_PAGE_SIZE }}
-          LARK_BATCH_DELAY_MS: ${{ secrets.LARK_BATCH_DELAY_MS }}
+        run: |
+          $required = @(
+            'MISA_ACCESS_CODE',
+            'LARK_APP_ID',
+            'LARK_APP_SECRET',
+            'LARK_BASE_APP_TOKEN',
+            'LARK_TABLE_ID'
+          )
+          $missing = @()
+          foreach ($name in $required) {
+            if ([string]::IsNullOrWhiteSpace((Get-Item "Env:$name").Value)) {
+              $missing += $name
+            }
+          }
+          if ($missing.Count -gt 0) {
+            Write-Error ("Thiếu GitHub Secrets: " + ($missing -join ', '))
+          }
+
+      - name: Run sync
+        env:
+          MISA_ACCESS_CODE: ${{ secrets.MISA_ACCESS_CODE }}
+          LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
+          LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+          LARK_BASE_APP_TOKEN: ${{ secrets.LARK_BASE_APP_TOKEN }}
+          LARK_TABLE_ID: ${{ secrets.LARK_TABLE_ID }}
         run: node scripts/sync-amis-to-lark-base.mjs

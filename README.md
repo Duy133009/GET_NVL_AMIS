@@ -91,24 +91,14 @@ Workflow hỗ trợ:
 - Chạy thủ công bằng `workflow_dispatch`
 - Chạy tự động theo lịch mỗi 3 giờ
 
-Để workflow hoạt động, cần tạo các `Repository Secrets` tương ứng trong GitHub:
+Để workflow hoạt động, hiện tại chỉ cần tạo các `Repository Secrets` bắt buộc trong GitHub:
 - `MISA_ACCESS_CODE`
-- `MISA_APP_ID`
-- `MISA_ORG_COMPANY_CODE`
-- `MISA_DICTIONARY_TYPE`
-- `MISA_SKIP`
-- `MISA_TAKE`
-- `MISA_LAST_SYNC_TIME`
 - `LARK_APP_ID`
 - `LARK_APP_SECRET`
 - `LARK_BASE_APP_TOKEN`
 - `LARK_TABLE_ID`
-- `LARK_CODE_FIELD`
-- `LARK_NAME_FIELD`
-- `LARK_PAGE_SIZE`
-- `LARK_BATCH_DELAY_MS`
 
-Trong thực tế, chỉ cần set các biến bắt buộc. Các biến còn lại có thể bỏ qua nếu muốn dùng mặc định.
+Các biến tùy chọn đang dùng giá trị mặc định ngay trong script. Nếu cần thay đổi các giá trị này trên GitHub Actions, có thể chỉnh trực tiếp trong workflow hoặc mở rộng thêm phần `env`.
 
 ## Kết quả mong đợi
 Khi chạy thành công, hệ thống sẽ:

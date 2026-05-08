@@ -16,7 +16,11 @@ const DEFAULTS = {
 const ENV = new Proxy(process.env, {
   get(target, prop) {
     if (typeof prop !== 'string') return undefined;
-    return target[prop] ?? DEFAULTS[prop];
+    const value = target[prop];
+    if (value == null || value === '') {
+      return DEFAULTS[prop];
+    }
+    return value;
   },
 });
 
