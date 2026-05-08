@@ -1,0 +1,1192 @@
+{
+  "name": "kéo nvl amiss về base",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const inventoryItemCode = $input.first().json.inventory_item_code;\nconst accessToken = $input.first().json.tenant_access_token;\n\nreturn [{\n  json: {\n    accessToken,\n    inventoryItemCode,\n    requestBody: {\n      filter: {\n        conjunction: \"and\",\n        conditions: [{\n          field_name: \"Ma_NVL\",\n          operator: \"is\",\n          value: [inventoryItemCode]\n        }]\n      },\n      automatic_fields: false\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7fabc976-c2cc-463e-9d8e-997ac5c973da",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2832,
+        336
+      ],
+      "id": "10d93714-338b-4247-aeeb-7666d936bf43",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://actapp.misa.vn/api/oauth/actopen/connect",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=                        {\n                        \"app_id\": \"b389320a-d4d5-4b61-a70a-36ff1d258df8\",\n                        \"access_code\": \"{{ $('Acess_token1').item.json.token }}\",\n                        \"org_company_code\": \"congtydemoketnoiact\"\n                        } ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1984,
+        32
+      ],
+      "id": "10311cc0-8277-4bbb-b01e-3de2b36d4261",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://actapp.misa.vn/apir/sync/actopen/get_dictionary",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-MISA-AccessToken",
+              "value": "={{ $json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "  {\n                        \"data_type\": 2 ,\n                        \"branch_id\": null ,\n                        \"skip\": 0,\n                        \"take\": 1000,\n                        \"app_id\": \"b389320a-d4d5-4b61-a70a-36ff1d258df8\",\n                        \"last_sync_time\": \"2000-01-25 14:15:02\"\n                        }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1568,
+        32
+      ],
+      "id": "c8b28d88-491b-4f2b-9c99-785bbf4d92c7",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse JSON string\nconst raw = $json[\"Data\"];\nconst parsed = JSON.parse(raw);\n\n// Trả về mỗi object là một item mới\nreturn parsed.map(item => {\n  return {\n    json: item\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1056,
+        32
+      ],
+      "id": "a3d93f98-e9d4-4e90-a645-66184f144658",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eb15df41-c769-4bb3-8806-ad7c6fed1888",
+              "name": "dictionary_type",
+              "value": "={{ $json.dictionary_type }}",
+              "type": "number"
+            },
+            {
+              "id": "861d2e55-63ae-4b4a-8261-a010bf1c92be",
+              "name": "inventory_item_id",
+              "value": "={{ $json.inventory_item_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a533a8de-a862-4fb9-9fb8-185546da657b",
+              "name": "inventory_item_name",
+              "value": "={{ $json.inventory_item_name }}",
+              "type": "string"
+            },
+            {
+              "id": "51a1b6b6-fea1-4866-93b8-8c7df63870e3",
+              "name": "inventory_item_code",
+              "value": "={{ $json.inventory_item_code }}",
+              "type": "string"
+            },
+            {
+              "id": "17414146-f699-4997-a57d-ac9d9e722cf5",
+              "name": "inventory_item_type",
+              "value": "={{ $json.inventory_item_type }}",
+              "type": "number"
+            },
+            {
+              "id": "3b9c13e5-1aa8-4aa6-b182-ce8dc40c0911",
+              "name": "=unit_id",
+              "value": "={{ $json.unit_id }}",
+              "type": "string"
+            },
+            {
+              "id": "43eaa691-9049-4cf6-b9e2-4b14038e71e7",
+              "name": "minimum_stock",
+              "value": "={{ $json.minimum_stock }}",
+              "type": "number"
+            },
+            {
+              "id": "420511cf-df05-47c3-b417-6ada8c4554dd",
+              "name": "branch_id",
+              "value": "={{ $json.branch_id }}",
+              "type": "string"
+            },
+            {
+              "id": "aec9b49b-ed09-435d-ab88-ac466f281fcd",
+              "name": "discount_type",
+              "value": "={{ $json.discount_type }}",
+              "type": "number"
+            },
+            {
+              "id": "b78b6457-1d16-470d-bf28-7e9c083e3e1b",
+              "name": "inventory_item_cost_method",
+              "value": "={{ $json.inventory_item_cost_method }}",
+              "type": "number"
+            },
+            {
+              "id": "75565b99-236c-4592-be6d-b0d42a94c9f3",
+              "name": "is_unit_price_after_tax",
+              "value": "={{ $json.is_unit_price_after_tax }}",
+              "type": "boolean"
+            },
+            {
+              "id": "3c76f8cb-9fb7-4dae-9fdb-96dca178c2bd",
+              "name": "is_system",
+              "value": "={{ $json.is_system }}",
+              "type": "boolean"
+            },
+            {
+              "id": "36828b66-f1b4-495d-809d-c6bdaa95fa90",
+              "name": "is_unit_price_after_tax",
+              "value": "={{ $json.is_unit_price_after_tax }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f3372226-81fb-4196-b199-4796710a6ce5",
+              "name": "is_system",
+              "value": "={{ $json.is_system }}",
+              "type": "boolean"
+            },
+            {
+              "id": "043ee452-8fa3-492d-8b72-567a90b41091",
+              "name": "inactive",
+              "value": "={{ $json.inactive }}",
+              "type": "boolean"
+            },
+            {
+              "id": "7cee5b2d-5140-443e-8dcc-cb246aa78271",
+              "name": "is_follow_serial_number",
+              "value": "={{ $json.is_follow_serial_number }}",
+              "type": "boolean"
+            },
+            {
+              "id": "d0b7fad1-c21b-4ed8-b04f-6a8473d834b9",
+              "name": "is_unit_price_after_tax",
+              "value": "={{ $json.is_unit_price_after_tax }}",
+              "type": "boolean"
+            },
+            {
+              "id": "38c39835-8481-4c44-8032-06b1f0123978",
+              "name": "is_system",
+              "value": "={{ $json.is_system }}",
+              "type": "boolean"
+            },
+            {
+              "id": "70a47bad-6c96-4fa1-958f-ba7f4c844b94",
+              "name": "inactive",
+              "value": "={{ $json.inactive }}",
+              "type": "boolean"
+            },
+            {
+              "id": "1b286165-4bf6-4ce8-856b-5778327b9969",
+              "name": "is_follow_serial_number",
+              "value": "={{ $json.is_follow_serial_number }}",
+              "type": "boolean"
+            },
+            {
+              "id": "593129af-0fed-4586-984a-dbde5b0cc6e9",
+              "name": "is_allow_duplicate_serial_number",
+              "value": "={{ $json.is_allow_duplicate_serial_number }}",
+              "type": "boolean"
+            },
+            {
+              "id": "e5478170-cb41-4d20-9be4-347c1d538b8a",
+              "name": "purchase_discount_rate",
+              "value": "={{ $json.purchase_discount_rate }}",
+              "type": "number"
+            },
+            {
+              "id": "4cde190a-64ac-488b-b83a-63ff38512d23",
+              "name": "unit_price",
+              "value": "={{ $json.unit_price }}",
+              "type": "number"
+            },
+            {
+              "id": "2821c12f-4156-4979-ad09-eae42b7b7526",
+              "name": "sale_price1",
+              "value": "={{ $json.sale_price1 }}",
+              "type": "number"
+            },
+            {
+              "id": "f0acb4bb-0645-49f7-8288-5c33f4ca2ca1",
+              "name": "sale_price2",
+              "value": "={{ $json.sale_price2 }}",
+              "type": "number"
+            },
+            {
+              "id": "74bbdbac-7523-46e2-97e9-349235f0c2d5",
+              "name": "sale_price3",
+              "value": "={{ $json.sale_price3 }}",
+              "type": "number"
+            },
+            {
+              "id": "1217f9f5-5446-45f1-83d0-7723de782d02",
+              "name": "fixed_sale_price",
+              "value": "={{ $json.fixed_sale_price }}",
+              "type": "number"
+            },
+            {
+              "id": "28d5c485-a0b9-44c5-94e1-bc110b32c192",
+              "name": "import_tax_rate",
+              "value": "={{ $json.import_tax_rate }}",
+              "type": "number"
+            },
+            {
+              "id": "0d18eb0b-6141-4aae-859c-0c2c7fa9cb37",
+              "name": "export_tax_rate",
+              "value": "={{ $json.export_tax_rate }}",
+              "type": "number"
+            },
+            {
+              "id": "254c437c-a5d8-4914-ae25-b855d354c849",
+              "name": "fixed_unit_price",
+              "value": "={{ $json.fixed_unit_price }}",
+              "type": "number"
+            },
+            {
+              "id": "e070be48-ef37-4556-ae6c-59ba8e9d3b19",
+              "name": "discount_account",
+              "value": "={{ $json.discount_account }}",
+              "type": "string"
+            },
+            {
+              "id": "269ccb6e-1a00-4230-b778-21e40d4d8529",
+              "name": "sale_off_account",
+              "value": "={{ $json.sale_off_account }}",
+              "type": "string"
+            },
+            {
+              "id": "0dd901fb-04b4-46fd-b5a3-24edee32f59c",
+              "name": "return_account",
+              "value": "={{ $json.return_account }}",
+              "type": "string"
+            },
+            {
+              "id": "7f783cfe-bc08-430c-ad04-4b1d59f79034",
+              "name": "purchase_description",
+              "value": "={{ $json.purchase_description }}",
+              "type": "string"
+            },
+            {
+              "id": "2b1ab5e5-cb78-48a5-b465-de274f2804c2",
+              "name": "sale_description",
+              "value": "={{ $json.sale_description }}",
+              "type": "string"
+            },
+            {
+              "id": "4c34e8f0-1b5e-400c-8b69-491f8a5fc321",
+              "name": "cogs_account",
+              "value": "={{ $json.cogs_account }}",
+              "type": "string"
+            },
+            {
+              "id": "5379fe4d-1504-47cd-af23-3549bfbf9ec8",
+              "name": "sale_account",
+              "value": "={{ $json.sale_account }}",
+              "type": "string"
+            },
+            {
+              "id": "f34c274f-77b8-4fcf-865e-8100229f98b2",
+              "name": "unit_list",
+              "value": "={{ $json.unit_list }}",
+              "type": "string"
+            },
+            {
+              "id": "05080424-d41a-40aa-bddc-2c76e496ea9b",
+              "name": "unit_name",
+              "value": "={{ $json.unit_name }}",
+              "type": "string"
+            },
+            {
+              "id": "8cbcca61-a769-4a06-ba0a-81de8e0ad208",
+              "name": "reftype",
+              "value": "={{ $json.reftype }}",
+              "type": "number"
+            },
+            {
+              "id": "d7ad4942-f849-49c4-9ac5-dbc43c97f670",
+              "name": "reftype_category",
+              "value": "={{ $json.reftype_category }}",
+              "type": "number"
+            },
+            {
+              "id": "272eb45a-cf8b-49ec-8fe9-4cc2903a1e4e",
+              "name": "purchase_last_unit_price_list",
+              "value": "={{ $json.purchase_last_unit_price_list }}",
+              "type": "string"
+            },
+            {
+              "id": "64f21828-8518-4cb3-ab0e-ba2cbbd0daa1",
+              "name": "quantityBarCode",
+              "value": "={{ $json.quantityBarCode }}",
+              "type": "number"
+            },
+            {
+              "id": "e3491904-4a9f-4284-b98a-a86319712561",
+              "name": "allocation_type",
+              "value": "={{ $json.allocation_type }}",
+              "type": "number"
+            },
+            {
+              "id": "5dc869a0-e6aa-459f-9cb7-2f747fad3d9d",
+              "name": "allocation_account",
+              "value": "={{ $json.allocation_account }}",
+              "type": "string"
+            },
+            {
+              "id": "35794469-ca80-463c-933f-5170625b8d0f",
+              "name": "tax_reduction_type",
+              "value": "={{ $json.tax_reduction_type }}",
+              "type": "number"
+            },
+            {
+              "id": "e0abaace-902f-4937-85d9-0bc621685442",
+              "name": "tax_reduction_type",
+              "value": "={{ $json.tax_reduction_type }}",
+              "type": "number"
+            },
+            {
+              "id": "81a3fddc-b48c-4836-ae63-1968321f4528",
+              "name": "purchase_last_unit_price",
+              "value": "={{ $json.purchase_last_unit_price }}",
+              "type": "number"
+            },
+            {
+              "id": "6e4bcbc2-cb2e-45ba-bf4d-7b080e85ebae",
+              "name": "is_specific_inventory_item",
+              "value": "={{ $json.is_specific_inventory_item }}",
+              "type": "boolean"
+            },
+            {
+              "id": "1b4e45ae-84ba-4819-a29b-629eb41db6a2",
+              "name": "has_delete_fixed_unit_price",
+              "value": "={{ $json.has_delete_fixed_unit_price }}",
+              "type": "boolean"
+            },
+            {
+              "id": "41934c35-e5f4-4a55-a2a1-fd8598b813f9",
+              "name": "has_delete_unit_price",
+              "value": "={{ $json.has_delete_unit_price }}",
+              "type": "boolean"
+            },
+            {
+              "id": "e7d6b8fc-d090-47df-ab81-9ffefef0c068",
+              "name": "has_delete_unit_price",
+              "value": "={{ $json.has_delete_unit_price }}",
+              "type": "boolean"
+            },
+            {
+              "id": "5412b1e8-7533-4c85-a0dd-7f807561d9e2",
+              "name": "has_delete_discount",
+              "value": "={{ $json.has_delete_discount }}",
+              "type": "boolean"
+            },
+            {
+              "id": "6186c9f8-f5f9-4e3a-9e0a-ec1488c5bd34",
+              "name": "has_delete_unit_convert",
+              "value": "={{ $json.has_delete_unit_convert }}",
+              "type": "boolean"
+            },
+            {
+              "id": "80de4363-17c9-463c-84f3-98f8d6a3f4b9",
+              "name": "has_delete_norm",
+              "value": "={{ $json.has_delete_norm }}",
+              "type": "boolean"
+            },
+            {
+              "id": "c7cb9bea-1819-4941-ad44-25d81998db27",
+              "name": "has_delete_unit_price",
+              "value": "={{ $json.has_delete_unit_price }}",
+              "type": "boolean"
+            },
+            {
+              "id": "1fbed4bc-a885-42cb-81d0-37155c252857",
+              "name": "has_delete_discount",
+              "value": "={{ $json.has_delete_discount }}",
+              "type": "boolean"
+            },
+            {
+              "id": "016fb4bb-6cf1-424f-8fb2-0b3b2bcaea0e",
+              "name": "has_delete_unit_convert",
+              "value": "={{ $json.has_delete_unit_convert }}",
+              "type": "boolean"
+            },
+            {
+              "id": "4fe031fa-9403-4b48-9364-13233327ca9c",
+              "name": "has_delete_norm",
+              "value": "={{ $json.has_delete_norm }}",
+              "type": "boolean"
+            },
+            {
+              "id": "99dd06fb-e1ce-4212-9266-5bfe00a67f65",
+              "name": "has_delete_serial_type",
+              "value": "={{ $json.has_delete_serial_type }}",
+              "type": "boolean"
+            },
+            {
+              "id": "b98fa5fa-d017-4b20-980b-7247667eecb9",
+              "name": "is_edit_multiple",
+              "value": "={{ $json.is_edit_multiple }}",
+              "type": "boolean"
+            },
+            {
+              "id": "ab9d80a2-5ffe-464f-9f2b-74ccd62d77bb",
+              "name": "crm_id",
+              "value": "={{ $json.crm_id }}",
+              "type": "string"
+            },
+            {
+              "id": "d4ec0d6c-33ba-406e-8c75-c62c8e475624",
+              "name": "is_not_sync_crm",
+              "value": "={{ $json.is_not_sync_crm }}",
+              "type": "boolean"
+            },
+            {
+              "id": "1b0a0a8d-230f-467d-a597-47f278b26454",
+              "name": "isUpdateRebundant",
+              "value": "={{ $json.isUpdateRebundant }}",
+              "type": "boolean"
+            },
+            {
+              "id": "28740b66-74aa-44a0-84c8-9747e7d45a34",
+              "name": "is_special_inv",
+              "value": "={{ $json.is_special_inv }}",
+              "type": "boolean"
+            },
+            {
+              "id": "8a95b131-cbda-4f60-878c-f16eb825b820",
+              "name": "isFromProcessBalance",
+              "value": "={{ $json.isFromProcessBalance }}",
+              "type": "boolean"
+            },
+            {
+              "id": "6be788b9-e36e-405c-b289-94241494250c",
+              "name": "specific_product_type",
+              "value": "={{ $json.specific_product_type }}",
+              "type": "number"
+            },
+            {
+              "id": "851a99ba-068f-4fb5-b293-f2f1475327aa",
+              "name": "specific_product_type_name",
+              "value": "={{ $json.specific_product_type_name }}",
+              "type": "number"
+            },
+            {
+              "id": "5dcc86d9-cc6d-4171-ba00-9b6d397f26fc",
+              "name": "is_drug",
+              "value": "={{ $json.is_drug }}",
+              "type": "boolean"
+            },
+            {
+              "id": "7102dabf-fce5-4457-9150-5591140e9594",
+              "name": "status_sync_medicine_national",
+              "value": "={{ $json.status_sync_medicine_national }}",
+              "type": "number"
+            },
+            {
+              "id": "c688d385-2090-4afa-a027-8139074a349f",
+              "name": "is_sync_corp",
+              "value": "={{ $json.is_sync_corp }}",
+              "type": "boolean"
+            },
+            {
+              "id": "9812fc1f-f109-4cf9-8bbd-b944a1ebd18c",
+              "name": "convert_rate",
+              "value": "={{ $json.convert_rate }}",
+              "type": "number"
+            },
+            {
+              "id": "bd032d9d-e96e-49bb-9c5f-5ba57d8b8dbc",
+              "name": "is_update_main_unit",
+              "value": "={{ $json.is_update_main_unit }}",
+              "type": "boolean"
+            },
+            {
+              "id": "68972750-4b8b-4299-98f7-82c8071222a7",
+              "name": "is_image_duplicate",
+              "value": "={{ $json.is_image_duplicate }}",
+              "type": "boolean"
+            },
+            {
+              "id": "e2785d25-f60f-4f27-904f-95125f03fcaa",
+              "name": "is_temp_master_sync_id",
+              "value": "={{ $json.is_temp_master_sync_id }}",
+              "type": "boolean"
+            },
+            {
+              "id": "6b08ee1e-714a-4b2b-9938-2527f38eb0fa",
+              "name": "IsSaveFromMasterData",
+              "value": "={{ $json.IsSaveFromMasterData }}",
+              "type": "boolean"
+            },
+            {
+              "id": "9d8eb180-7f25-449e-bdd4-264861e4f034",
+              "name": "isDeleteMasterData",
+              "value": "={{ $json.isDeleteMasterData }}",
+              "type": "boolean"
+            },
+            {
+              "id": "79fe09df-9fb7-4378-a83e-b712911c2cbe",
+              "name": "isAddMasterData",
+              "value": "={{ $json.isAddMasterData }}",
+              "type": "boolean"
+            },
+            {
+              "id": "a0bfa9fe-2bc8-47e2-9f1d-400a56ccc6a9",
+              "name": "discount_value",
+              "value": "={{ $json.discount_value }}",
+              "type": "number"
+            },
+            {
+              "id": "271e5e59-19b0-4c32-b946-ec9b06fe5a39",
+              "name": "is_set_discount",
+              "value": "={{ $json.is_set_discount }}",
+              "type": "boolean"
+            },
+            {
+              "id": "bf227146-0780-47c3-a7db-1ef38d497ab8",
+              "name": "index_unit_convert",
+              "value": "={{ $json.index_unit_convert }}",
+              "type": "number"
+            },
+            {
+              "id": "897d70af-36fe-480e-b8d2-475e0a38cf2d",
+              "name": "excel_row_index",
+              "value": "={{ $json.excel_row_index }}",
+              "type": "number"
+            },
+            {
+              "id": "3503ef41-5ab3-4f7f-b6b4-d64c70179baa",
+              "name": "is_valid",
+              "value": "={{ $json.is_valid }}",
+              "type": "boolean"
+            },
+            {
+              "id": "31afdd9d-0dbb-4752-9ec2-43ac9d492582",
+              "name": "created_date",
+              "value": "={{ $json.created_date }}",
+              "type": "string"
+            },
+            {
+              "id": "00c66d5f-9bdd-4159-b4cc-36ab91f4f19e",
+              "name": "created_by",
+              "value": "={{ $json.created_by }}",
+              "type": "string"
+            },
+            {
+              "id": "62f65bf9-2d58-4317-87aa-24be14a7701f",
+              "name": "modified_date",
+              "value": "={{ $json.modified_date }}",
+              "type": "string"
+            },
+            {
+              "id": "68b8a11d-3fb8-4ee7-99ca-ff51bab1d9f4",
+              "name": "modified_by",
+              "value": "={{ $json.modified_by }}",
+              "type": "string"
+            },
+            {
+              "id": "53ae77db-70a9-46b3-a148-a3cb84a453a2",
+              "name": "auto_refno",
+              "value": "={{ $json.auto_refno }}",
+              "type": "boolean"
+            },
+            {
+              "id": "b53b9264-3ef6-44ed-9f86-d406fe05a78a",
+              "name": "force_update",
+              "value": "={{ $json.force_update }}",
+              "type": "boolean"
+            },
+            {
+              "id": "607a234f-327f-4587-a08b-bd813030685c",
+              "name": "state",
+              "value": "={{ $json.state }}",
+              "type": "number"
+            },
+            {
+              "id": "bf62d99c-7f51-4dd0-941e-32b719376f84",
+              "name": "is_created_from_old_db",
+              "value": "={{ $json.is_created_from_old_db }}",
+              "type": "boolean"
+            },
+            {
+              "id": "4c31cb50-e5c3-4c79-8d68-345a6446afaa",
+              "name": "tenant_access_token",
+              "value": "={{ $('Create token1').item.json.tenant_access_token }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a10e6b52-c7f6-4c3a-95fb-e61ab6f06eb8",
+      "name": "Normalize data1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        32
+      ],
+      "id": "1a612919-93db-4df1-8560-0dda1c2fba17",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Chạy cho từng item\nreturn items.map(item => {\n  const rawData = item.json[\"Data\"]; // Lấy chuỗi JSON từ trường Data\n  const parsed = JSON.parse(rawData); // Parse chuỗi JSON thành object\n\n  return {\n    json: parsed // Trả về object đã parse\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        32
+      ],
+      "id": "595a6160-7ca1-4cb0-98ab-066269ccee19",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n\"token\": \n\"NJwNdfjD1EusR+iPwFvU10H5vfFANuDcCxboXxIz1dKpjLkbZMmBkR3gv0pwkeNJ3n0WjlDiPvbRz397AeKhRJro3aegEJySmsPbY31osClXmHkAqi9i1B0HfinHbU62Y4tXR3WsvmWPgGkh3O5n7JY9hjP3w92p1Wp5E7EugUVW+GAQ1MD6BgAStAAfCOJNs4mo0QpIYQLXsCFuvTkJpZVNCUF5tNjqPEUUk8QSo+i//gYjEQeKyTl1VCYy8NBtciXEz03Ov2stUWrnXFx3xg==\",\n\"app_id\": \n\"cli_a72ffec19c78d02f\",\n\"app_scret\": \n\"9AE5c8mjNvNnzZAdJ7z9dfvqYbHlLqoN\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2400,
+        32
+      ],
+      "id": "93f47191-139b-407b-a7be-5bb45dad97ea",
+      "name": "Acess_token1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "app_id",
+              "value": "={{ $json.app_id }}"
+            },
+            {
+              "name": "app_secret",
+              "value": "={{ $json.app_scret }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"app_id\": \"cli_a72ffec19c78d02f\",\n    \"app_secret\": \"9AE5c8mjNvNnzZAdJ7z9dfvqYbHlLqoN\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2160,
+        32
+      ],
+      "id": "cf1efa6e-fff3-415a-826b-ff1ef02c462f",
+      "name": "Create token1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3008,
+        16
+      ],
+      "id": "48bc5757-ea97-4808-a28c-490205498f69",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1728,
+        0
+      ],
+      "id": "99473942-6f4a-4905-bec4-ce64e856ac62",
+      "name": "Wait2",
+      "webhookId": "2db19d3e-fb49-4ba8-a108-457a6f9edb23"
+    },
+    {
+      "parameters": {
+        "batchSize": 30,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1008,
+        -16
+      ],
+      "id": "f92cfa30-4ddf-4067-94d6-16b219e11414",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.larksuite.com/open-apis/bitable/v1/apps/EFWPbB04eaPBWGse700lEg1Mg6M/tables/tbl6uNGrldZnL3xF/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Edit Fields').item.json.tenant_access_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    fields: {\n      Mã_NVL: $('Edit Fields').item.json.inventory_item_name,\n      Tên_NVL: $('Edit Fields').item.json.inventory_item_name.toString()\n    }\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        0
+      ],
+      "id": "c2203710-b1f8-4840-b932-3a93a6059682",
+      "name": "Creates records lark",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "87e38320-bec7-4bae-9c15-392cba496219",
+              "leftValue": "={{ $json.data.total }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        448
+      ],
+      "id": "1ef5a111-8884-4f79-bd21-de74875a3569",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        896
+      ],
+      "id": "9a5bf891-ee9d-4444-a74e-58bd9987c6e3",
+      "name": "Wait3",
+      "webhookId": "b796dc21-ec6a-4e81-8aaf-44f339cd5b2c"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lấy toàn bộ dữ liệu từ các item trước\nconst data = items.map(item => item.json);\n\n// Nếu data là mảng → dùng luôn\n// Nếu không phải mảng → thử lấy ra key đầu tiên chứa mảng\nconst arr = Array.isArray(data)\n  ? data\n  : Object.values(data).find(v => Array.isArray(v)) || [data]; // fallback nếu chỉ có 1 object\n\n// Bắt đầu xử lý từng object\nconst result = arr.map(obj => {\n  const newObj = { ...obj };\n  \n  // Danh sách các field cần parse (vì chúng có thể chứa chuỗi JSON)\n  const jsonFields = ['unit_list', 'purchase_last_unit_price_list'];\n\n  jsonFields.forEach(field => {\n    const val = obj[field];\n    // Nếu là string thì thử parse, nếu không thì giữ nguyên\n    if (typeof val === 'string') {\n      try {\n        newObj[field] = JSON.parse(val);\n      } catch (e) {\n        newObj[field] = val; // giữ nguyên nếu lỗi parse\n      }\n    } else {\n      newObj[field] = val; // giữ nguyên object\n    }\n  });\n\n  return newObj;\n});\n\n// Trả kết quả cho n8n\nreturn result.map(r => ({ json: r }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -592,
+        32
+      ],
+      "id": "01a0341a-a065-4ea6-a0f9-f31d6d2f29eb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "89067045-d43c-4cae-b964-83417882b411",
+              "name": "inventory_item_name",
+              "value": "={{ $json.inventory_item_name }}",
+              "type": "string"
+            },
+            {
+              "id": "c94b7f68-fae9-4f49-9cad-c84c8e468340",
+              "name": "inventory_item_code",
+              "value": "={{ $json.inventory_item_code }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -208,
+        32
+      ],
+      "id": "073b7515-cf5e-422e-8d0c-5130ebc22faf",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.larksuite.com/open-apis/bitable/v1/apps/EFWPbB04eaPBWGse700lEg1Mg6M/tables/tbl6uNGrldZnL3xF/records/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "page_size",
+              "value": "500"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Create token1').item.json.app_access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json; charset=utf-8",
+        "body": "={\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"Mã_NVL\",\n        \"operator\": \"is\",\n        \"value\": [\"{{ $('Edit Fields').item.json.inventory_item_code }}\"]\n      }\n    ]\n  },\n  \"automatic_fields\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        -16
+      ],
+      "id": "b96634fd-213d-4c94-8bf5-cbe0a937f80a",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.first().json;\n\nif (!resp.data || resp.data.total === 0) {\n  return [{ json: { items: [], total: 0, found: false } }];\n}\n\nreturn (resp.data.items || []).map(i => ({ json: i }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        -16
+      ],
+      "id": "9642b26d-ea74-4e45-b5e9-ff2343afdba5",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "pinData": {
+    "Acess_token1": [
+      {
+        "json": {
+          "token": "NJwNdfjD1EusR+iPwFvU10H5vfFANuDcCxboXxIz1dKpjLkbZMmBkR3gv0pwkeNJ3n0WjlDiPvbRz397AeKhRJro3aegEJySmsPbY31osClXmHkAqi9i1B0HfinHbU62Y4tXR3WsvmWPgGkh3O5n7JY9hjP3w92p1Wp5E7EugUVW+GAQ1MD6BgAStAAfCOJNs4mo0QpIYQLXsCFuvTkJpZVNCUF5tNjqPEUUk8QSo+i//gYjEQeKyTl1VCYy8NBtciXEz03Ov2stUWrnXFx3xg==",
+          "app_id": "cli_a72ffec19c78d02f",
+          "app_scret": "9AE5c8mjNvNnzZAdJ7z9dfvqYbHlLqoN"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Acess_token1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Normalize data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acess_token1": {
+      "main": [
+        [
+          {
+            "node": "Create token1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create token1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Acess_token1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Creates records lark",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creates records lark": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        []
+      ]
+    },
+    "Normalize data1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "41f496b0-abd4-41b5-a8fe-45beab1765ac",
+  "meta": {
+    "instanceId": "a7e523b39d02669025ac9e1b9150043f2c236d471fe47d781acdf017c3b43d2b"
+  },
+  "id": "53pjLez3QbCm69md",
+  "tags": []
+}
